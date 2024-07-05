@@ -18,6 +18,8 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
+# FRONT END ERROR, CANNOT USE
+
 Start dev server.
 
 `python manage.py runserver`
