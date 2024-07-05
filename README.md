@@ -19,6 +19,7 @@ python manage.py migrate
 ```
 
 # FRONT END ERROR, CANNOT USE
+# CANNOT USE APPOLO UPLOAD FILE WITH VUE VITE
 
 Start dev server.
 

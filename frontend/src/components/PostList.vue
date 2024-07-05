@@ -46,7 +46,7 @@ export default {
     },
     computed: {
         publishedPosts() {
-            return this.posts.filter((post) => post.isPublished)
+            return this.posts?.filter((post) => post?.isPublished)
         }
     },
     methods: {
