@@ -71,6 +71,66 @@ class UpdateUserProfile(graphene.Mutation):
         return UpdateUserProfile(user=user)
 
 
+class CreatePost(graphene.Mutation):
+    post = graphene.Field(types.PostType)
+
+    class Arguments:
+        title = graphene.String(required=True)
+        content = graphene.String(required=True)
+        featured_image = Upload(required=False)
+        is_published = graphene.Boolean(required=False)
+        is_featured = graphene.Boolean(required=False)
+        category_id = graphene.ID(required=True)
+        tag_ids = graphene.List(graphene.ID, required=False)
+
+    def mutate(
+        self,
+        info,
+        title,
+        content,
+        featured_image,
+        is_published,
+        is_featured,
+        category_id,
+        tag_ids,
+    ):
+        post = models.Post(
+            title=title,
+            content=content,
+            featured_image=featured_image,
+            is_published=is_published,
+            is_featured=is_featured,
+            category_id=category_id,
+        )
+        post.save()
+
+        for tag_id in tag_ids:
+            post.tags.add(tag_id)
+
+        post.save()
+
+        return CreatePost(post=post)
+
+
+class CreateCategory(graphene.Mutation):
+    category = graphene.Field(types.CategoryType)
+
+    class Arguments:
+        name = graphene.String(required=True)
+        slug = graphene.String(required=True)
+        description = graphene.String(required=True)
+
+    def mutate(self, info, name, slug, description):
+        category = models.Category(
+            name=name,
+            slug=slug,
+            description=description,
+        )
+        category.save()
+
+        return CreateCategory(category=category)
+
+
 class CreateComment(graphene.Mutation):
     comment = graphene.Field(types.CommentType)
 
@@ -79,6 +139,7 @@ class CreateComment(graphene.Mutation):
         user_id = graphene.ID(required=True)
         post_id = graphene.ID(required=True)
 
+    @graphql_jwt.decorators.login_required
     def mutate(self, info, content, user_id, post_id):
         comment = models.Comment(
             content=content,
@@ -137,6 +198,7 @@ class Mutation(graphene.ObjectType):
     refresh_token = graphql_jwt.Refresh.Field()
 
     create_user = CreateUser.Field()
+    create_post = CreatePost.Field()
     create_comment = CreateComment.Field()
 
     update_post_like = UpdatePostLike.Field()
